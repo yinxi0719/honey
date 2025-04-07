@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宝贝今天吃什么</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(125deg, #ff6b6b, #4ecdc4, #1a535c);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            opacity: 0.6;
+            z-index: -2;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cpath fill='white' d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' opacity='0.1'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            z-index: -1;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-weight: 700;
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
+            border-radius: 3px;
+        }
+        
+        .random-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .result-container {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.8), rgba(240,240,240,0.5));
+            border-radius: 50%;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.1),
+                        -10px -10px 30px rgba(255, 255, 255, 0.8),
+                        inset 0 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .result-container:hover {
+            transform: scale(1.03);
+            box-shadow: 15px 15px 40px rgba(0, 0, 0, 0.15),
+                        -15px -15px 40px rgba(255, 255, 255, 0.9),
+                        inset 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-image {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #fff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-name {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.2), transparent);
+            clip-path: polygon(0 0, 100% 0, 100% 20%, 0 50%);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .management-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, #ff6b6b, #4ecdc4);
+            border-radius: 3px;
+        }
+        
+        .food-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+        
+        .food-item {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(0);
+        }
+        
+        .food-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .food-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .food-item:hover .food-image {
+            transform: scale(1.05);
+        }
+        
+        .food-info {
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .food-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .rotating {
+            animation: rotate 0.5s ease-in-out;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #888;
+            font-size: 1.1rem;
+            padding: 20px;
+            width: 100%;
+            background: rgba(248, 249, 250, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .result-container {
+                width: 220px;
+                height: 220px;
+            }
+            
+            .result-image {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .food-list {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>宝贝今天吃什么</h1>
+        
+        <div class="random-section">
+            <div class="result-container" id="resultContainer">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Crect width='160' height='160' fill='%23f5f5f5'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='20' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3E点击下方按钮%3C/text%3E%3C/svg%3E" alt="食物图片" class="result-image" id="resultImage">
+                <div class="result-name" id="resultName">等待选择...</div>
+            </div>
+            <button class="btn" id="randomButton">随机选择美食</button>
+        </div>
+        
+        <div class="management-section">
+            <h2 class="section-title">美食列表</h2>
+            <div class="food-list" id="foodList">
+                <!-- 食物列表会动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 默认食物数据
+        const defaultFoods = [
+    {
+        "name": "油泼炸酱拉条子",
+        "image": "https://kkimgs.yisou.com/ims?kt=url&at=ori&key=aHR0cDovL3AwLml0Yy5jbi9pbWFnZXMwMS8yMDIwMDYyMS8yMzEwN2JjYmJmYTY0ZmY4YTI4YjdlNDU2ZGVlMjYxZS5qcGVn&sign=yx:5aK1qKoUI2gQPkRQmbu2W_6ovEs=&tv=0_0"
+    },
+    {
+        "name": "火锅",
+        "image": "https://kkimgs.yisou.com/ims?kt=url&at=ori&key=aHR0cHM6Ly9wMC5tZWl0dWFuLm5ldC9kZWFsLzQwMDA5MDgwM2UxZmZmODAyMjZhODM5NWQ1ZDU1MjNhMTUyNDc1LmpwZw==&sign=yx:vtKmiFratw8mDXYF5x0o6-Kb-Sc=&tv=0_0"
+    },
+    {
+        "name": "红烧牛肉",
+        "image": "https://kkimgs.yisou.com/ims?kt=url&at=ori&key=aHR0cHM6Ly9waWMucXVhbmppbmcuY29tLzYwL2xuL1FKOTEwNDI0NzI5OS5qcGdAJTIxMzUwaA==&sign=yx:pK1U4hjIVJDL1HMl2MTkktjDwg8=&tv=0_0"
+    }
+];
+
+        // 使用默认食物数据
+        let foods = defaultFoods;
+
+        // DOM 元素
+        const resultContainer = document.getElementById('resultContainer');
+        const resultImage = document.getElementById('resultImage');
+        const resultName = document.getElementById('resultName');
+        const randomButton = document.getElementById('randomButton');
+        const foodList = document.getElementById('foodList');
+
+        // 渲染食物列表
+        function renderFoodList() {
+            foodList.innerHTML = '';
+            
+            if (foods.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-message';
+                emptyMessage.textContent = '暂无食物';
+                foodList.appendChild(emptyMessage);
+                return;
+            }
+            
+            foods.forEach((food) => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                
+                foodItem.innerHTML = `
+                    <img src="${food.image}" alt="${food.name}" class="food-image">
+                    <div class="food-info">
+                        <div class="food-name">${food.name}</div>
+                    </div>
+                `;
+                
+                foodList.appendChild(foodItem);
+            });
+        }
+
+        // 随机选择食物
+        function randomSelectFood() {
+            if (foods.length === 0) {
+                resultName.textContent = '没有可供选择的食物';
+                return;
+            }
+            
+            // 添加旋转动画
+            resultContainer.classList.add('rotating');
+            
+            // 0.5秒后显示结果
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * foods.length);
+                const selectedFood = foods[randomIndex];
+                
+                resultImage.src = selectedFood.image;
+                resultName.textContent = selectedFood.name;
+                
+                resultContainer.classList.remove('rotating');
+            }, 500);
+        }
+
+        // 事件监听
+        randomButton.addEventListener('click', randomSelectFood);
+
+        // 初始化页面
+        renderFoodList();
+    </script>
+</body>
+</html>
